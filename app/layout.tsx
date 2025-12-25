@@ -61,6 +61,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <Script
+          id="structured-data-organization"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -87,6 +88,7 @@ export default function RootLayout({
           }}
         />
         <Script
+          id="structured-data-website"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
