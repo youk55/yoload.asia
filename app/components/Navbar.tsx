@@ -13,43 +13,17 @@ export default function Navbar() {
 
   const closeMenu = useCallback(() => setOpen(false), []);
 
-  // Close on Escape and trap focus inside mobile menu when open
+  // Close on Escape
   useEffect(() => {
     if (!open) return;
 
-    const focusFirst = () => {
-      // focus first link after panel is rendered
-      requestAnimationFrame(() => {
-        firstLinkRef.current?.focus();
-      });
-    };
-
-    focusFirst();
+    requestAnimationFrame(() => firstLinkRef.current?.focus());
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
         setOpen(false);
         requestAnimationFrame(() => toggleRef.current?.focus());
-        return;
-      }
-
-      if (e.key === "Tab" && menuRef.current) {
-        const focusables = menuRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusables.length === 0) return;
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-        const active = document.activeElement as HTMLElement | null;
-
-        if (!e.shiftKey && active === last) {
-          e.preventDefault();
-          (first as HTMLElement).focus();
-        } else if (e.shiftKey && active === first) {
-          e.preventDefault();
-          (last as HTMLElement).focus();
-        }
       }
     };
 
@@ -69,19 +43,17 @@ export default function Navbar() {
       const t = e.target as Node | null;
       const inMenu = !!menuRef.current && !!t && menuRef.current.contains(t);
       const inToggle = !!toggleRef.current && !!t && toggleRef.current.contains(t);
-      if (!inMenu && !inToggle) {
-        setOpen(false);
-      }
+      if (!inMenu && !inToggle) setOpen(false);
     };
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [open]);
 
   const linkClass =
-    "transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+    "transition-colors text-slate-700 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
 
   const NavLinks = (
-    <ul className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 text-sm text-gray-700">
+    <ul className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 text-sm">
       <li>
         <Link href="/" className={linkClass} onClick={closeMenu} ref={firstLinkRef}>
           Home
@@ -107,32 +79,44 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6">
+      <div className="container mx-auto flex items-center justify-between px-4 py-6 sm:px-6">
         {/* SR-only live region to announce menu state */}
         <div aria-live="polite" role="status" aria-atomic="true" className="sr-only">
           {announcement}
         </div>
-        <Link href="/" className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
+
+        {/* Logo (BIG) */}
+        <Link
+          href="/"
+          className="flex items-center rounded-xl px-2 py-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+        >
           <Image
             src="/logo.png"
-            alt="Yoload logo"
-            width={28}
-            height={28}
-            className="h-7 w-7"
+            alt="Yoload"
+            width={160}
+            height={160}
+            className="h-24 w-auto sm:h-28"
             priority
           />
           <span className="sr-only">Yoload</span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav aria-label="Main" className="hidden md:block">
-          {NavLinks}
-        </nav>
+        {/* Desktop nav + CTA */}
+        <div className="hidden md:flex items-center gap-6">
+          <nav aria-label="Main">{NavLinks}</nav>
+
+          <Link
+            href="#contact"
+            className="inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold bg-orange-600 text-white shadow-sm hover:bg-orange-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+          >
+            Let’s talk
+          </Link>
+        </div>
 
         {/* Mobile toggle */}
         <button
           type="button"
-          className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-700 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/20"
           aria-controls="mobile-menu"
           aria-expanded={open}
           aria-label={open ? "Close main menu" : "Open main menu"}
@@ -141,15 +125,30 @@ export default function Navbar() {
           ref={toggleRef}
         >
           <span className="sr-only">Toggle navigation</span>
-          {/* Icon: hamburger / close */}
           {open ? (
-            // Close (X)
-            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              className="h-6 w-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           ) : (
-            // Hamburger
-            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              className="h-6 w-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <path d="M3 6h18M3 12h18M3 18h18" />
             </svg>
           )}
@@ -159,8 +158,15 @@ export default function Navbar() {
       {/* Mobile menu panel */}
       {open && (
         <div id="mobile-menu" ref={menuRef} className="md:hidden border-t bg-white">
-          <div className="container mx-auto px-4 py-3 sm:px-6">
+          <div className="container mx-auto px-4 py-3 sm:px-6 space-y-4">
             {NavLinks}
+            <Link
+              href="#contact"
+              onClick={closeMenu}
+              className="inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold bg-orange-600 text-white shadow-sm hover:bg-orange-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-500/20"
+            >
+              Let’s talk
+            </Link>
           </div>
         </div>
       )}
