@@ -1,0 +1,6 @@
+[agent]
+enabled = true
+auto_approve = true
+allow_fs_write = true
+allow_command = true
+max_iterations = 50
