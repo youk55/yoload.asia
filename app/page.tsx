@@ -24,8 +24,10 @@ export default function Home() {
           }),
         }}
       />
-      <section className="container mx-auto flex min-h-[70vh] items-center justify-center px-4 py-12 text-center sm:px-6 sm:py-16 md:py-20">
-        <div className="flex w-full max-w-2xl flex-col items-center text-center space-y-3 sm:space-y-4 md:space-y-6">
+      <section className="relative overflow-hidden flex min-h-[80vh] items-center justify-center px-4 py-16 text-center sm:px-6 sm:py-20 md:py-24 bg-gradient-to-b from-orange-50/40 via-white to-white">
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-orange-200/40 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-amber-100/40 blur-3xl" />
+        <div className="container mx-auto flex w-full max-w-3xl flex-col items-center text-center space-y-4 sm:space-y-5 md:space-y-7">
           <Image
             src="/logo.png"
             alt="Yoload logo"
@@ -34,22 +36,22 @@ export default function Home() {
             priority
             className="h-28 w-auto sm:h-32 md:h-36"
           />
-          <p className="font-semibold tracking-wide text-orange-500">
+          <p className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-orange-600">
             YOLO ADVENTURES PTE. LTD.
           </p>
-          <p className="text-sm leading-relaxed text-gray-500 sm:text-base">
+          <p className="text-sm leading-relaxed text-gray-600 sm:text-base">
             Life is once. Let’s explore it together.
           </p>
-          <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-5xl">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight text-gray-900">
             Yoload
           </h1>
-          <p className="max-w-prose text-base leading-relaxed text-gray-600 sm:text-lg">
+          <p className="max-w-prose text-lg sm:text-xl leading-relaxed text-gray-600">
             Fast, modern logistics software.
           </p>
           <div>
             <a
               href="#contact"
-              className="inline-block rounded-md bg-black px-5 py-3 text-white shadow-sm transition hover:bg-gray-800"
+              className="inline-flex items-center justify-center rounded-lg bg-orange-600 px-6 py-3 text-white shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 hover:bg-orange-700 active:bg-orange-800"
             >
               Get in touch
             </a>
@@ -62,3 +64,4 @@ export default function Home() {
     </>
   );
 }
+
