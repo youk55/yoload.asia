@@ -1,34 +1,74 @@
+# ===============================
 # Dependencies
-node_modules
+# ===============================
+node_modules/
 
+# ===============================
 # Next.js
-.next
-out
+# ===============================
+.next/
+out/
+dist/
 
-# Production
-dist
+# ===============================
+# Vercel
+# ===============================
+.vercel/
 
+# ===============================
 # Logs
+# ===============================
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Env files
+# ===============================
+# Environment variables
+# ===============================
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# OS
+# ===============================
+# OS / Editor
+# ===============================
 .DS_Store
+Thumbs.db
 
-# Vercel
-.vercel
-
+# ===============================
+# Codex / Agent artifacts
+# ===============================
 Hey!
 codex
+.codex/
+.codex-cache/
 
-# Next.js cache dir for Dropbox workaround
-.next-cache
+# ===============================
+# TypeScript / Build cache
+# ===============================
+.next-cache/
+tsconfig.tsbuildinfo
+
+# ===============================
+# Temporary / Backup files
+# ===============================
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# ===============================
+# Windows junk
+# ===============================
+desktop.ini
+$RECYCLE.BIN/
+
+# ===============================
+# Dropbox conflict files
+# ===============================
+*Dropbox*
+*.conflicted*
