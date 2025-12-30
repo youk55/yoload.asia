@@ -22,10 +22,8 @@ export default function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
   const [toast, setToast] = useState<{ message: string; kind: "success" | "error" } | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string>("");
-  // Honeypot field (should remain empty)
   const [honeypot, setHoneypot] = useState<string>("");
 
-  // Expose callback for Cloudflare Turnstile widget
   useEffect(() => {
     (window as any).onTurnstileSuccess = (token: string) => {
       setTurnstileToken(token);
@@ -49,12 +47,8 @@ export default function ContactSection() {
     return e;
   };
 
-  const onChange = (
-    field: keyof FormValues,
-    value: string
-  ) => {
+  const onChange = (field: keyof FormValues, value: string) => {
     setValues((prev) => ({ ...prev, [field]: value }));
-    // Live-validate the single field
     setErrors((prev) => {
       const next = { ...prev };
       const temp: FormValues = { ...values, [field]: value } as FormValues;
@@ -68,6 +62,7 @@ export default function ContactSection() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(false);
+
     const ve = validate(values);
     setErrors(ve);
     if (Object.keys(ve).length > 0) {
@@ -89,6 +84,7 @@ export default function ContactSection() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...values, turnstileToken, honeypot }),
       });
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         const msg = data?.error || "Failed to send message.";
@@ -96,6 +92,7 @@ export default function ContactSection() {
         setTimeout(() => setToast(null), 4000);
         return;
       }
+
       setSubmitted(true);
       setValues({ name: "", email: "", message: "" });
       setTurnstileToken("");
@@ -107,179 +104,255 @@ export default function ContactSection() {
   };
 
   const inputClass = (hasError: boolean) =>
-    `w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-900 ${
+    `w-full rounded-md border bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 ${
       hasError ? "border-red-500" : "border-gray-300"
     }`;
 
   return (
     <section id="contact" className="border-t">
-      <div className="container mx-auto px-4 py-12 sm:px-6 sm:py-16 md:py-20">
+      <div className="container mx-auto px-4 py-14 sm:px-6 sm:py-16 md:py-20">
         {/* Toast */}
         {toast && (
           <div
             role="status"
             aria-live="polite"
             className={`fixed right-4 top-20 z-[60] max-w-sm rounded-md px-4 py-3 text-sm shadow-lg ${
-              toast.kind === "success"
-                ? "bg-green-600 text-white"
-                : "bg-red-600 text-white"
+              toast.kind === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
             }`}
           >
             {toast.message}
           </div>
         )}
+
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
+          <p className="text-xs font-semibold tracking-[0.2em] text-orange-600 uppercase">
             Contact
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl md:text-4xl">
+            Let’s discuss your growth goals
           </h2>
           <p className="mt-3 text-base leading-relaxed text-gray-600 sm:text-lg">
-            Tell us about your logistics challenges. We’ll get back shortly.
+            Ads, e-commerce, and operations — tell us what you’re trying to achieve and where you’re
+            stuck.
           </p>
         </div>
 
-        <div className="mx-auto mt-10 max-w-xl">
-          {/* Turnstile script */}
+        <div className="mx-auto mt-10 max-w-5xl">
           <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
-          <form className="grid gap-4" onSubmit={onSubmit} noValidate aria-busy={submitting}>
-            {/* Honeypot (hidden from users) */}
-            <div className="sr-only" aria-hidden>
-              <label htmlFor="website">Website</label>
-              <input
-                id="website"
-                name="website"
-                type="text"
-                autoComplete="off"
-                tabIndex={-1}
-                value={honeypot}
-                onChange={(e) => setHoneypot(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="name" className="mb-1 block text-sm font-medium text-gray-700">
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                className={inputClass(Boolean(errors.name))}
-                placeholder="Your name"
-                value={values.name}
-                onChange={(e) => onChange("name", e.target.value)}
-                aria-invalid={Boolean(errors.name)}
-                aria-describedby={errors.name ? "name-error" : undefined}
-                required
-              />
-              {errors.name && (
-                <p id="name-error" className="mt-1 text-sm text-red-600">
-                  {errors.name}
-                </p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                className={inputClass(Boolean(errors.email))}
-                placeholder="you@example.com"
-                value={values.email}
-                onChange={(e) => onChange("email", e.target.value)}
-                aria-invalid={Boolean(errors.email)}
-                aria-describedby={errors.email ? "email-error" : undefined}
-                required
-              />
-              {errors.email && (
-                <p id="email-error" className="mt-1 text-sm text-red-600">
-                  {errors.email}
-                </p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="message" className="mb-1 block text-sm font-medium text-gray-700">
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={4}
-                className={inputClass(Boolean(errors.message))}
-                placeholder="How can we help?"
-                value={values.message}
-                onChange={(e) => onChange("message", e.target.value)}
-                aria-invalid={Boolean(errors.message)}
-                aria-describedby={errors.message ? "message-error" : undefined}
-                required
-              />
-              {errors.message && (
-                <p id="message-error" className="mt-1 text-sm text-red-600">
-                  {errors.message}
-                </p>
-              )}
-            </div>
-            {/* Cloudflare Turnstile widget */}
-            <div>
-              <div
-                className="cf-turnstile"
-                data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                data-callback="onTurnstileSuccess"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Protected by Cloudflare Turnstile.
-                {!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
-                  <>
-                    {' '}Missing site key. Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in env.
-                  </>
+
+          <div className="grid gap-6 md:grid-cols-5">
+            {/* Left: Form */}
+            <div className="md:col-span-3 rounded-2xl border bg-white p-6 shadow-sm">
+              <form className="grid gap-4" onSubmit={onSubmit} noValidate aria-busy={submitting}>
+                {/* Honeypot */}
+                <div className="sr-only" aria-hidden>
+                  <label htmlFor="website">Website</label>
+                  <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    autoComplete="off"
+                    tabIndex={-1}
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="name" className="mb-1 block text-sm font-medium text-gray-700">
+                      Name
+                    </label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      className={inputClass(Boolean(errors.name))}
+                      placeholder="Your name"
+                      value={values.name}
+                      onChange={(e) => onChange("name", e.target.value)}
+                      aria-invalid={Boolean(errors.name)}
+                      aria-describedby={errors.name ? "name-error" : undefined}
+                      required
+                    />
+                    {errors.name && (
+                      <p id="name-error" className="mt-1 text-sm text-red-600">
+                        {errors.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      className={inputClass(Boolean(errors.email))}
+                      placeholder="you@example.com"
+                      value={values.email}
+                      onChange={(e) => onChange("email", e.target.value)}
+                      aria-invalid={Boolean(errors.email)}
+                      aria-describedby={errors.email ? "email-error" : undefined}
+                      required
+                    />
+                    {errors.email && (
+                      <p id="email-error" className="mt-1 text-sm text-red-600">
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="mb-1 block text-sm font-medium text-gray-700">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={5}
+                    className={inputClass(Boolean(errors.message))}
+                    placeholder="Example: target markets, channels, budget range, and what you want to improve."
+                    value={values.message}
+                    onChange={(e) => onChange("message", e.target.value)}
+                    aria-invalid={Boolean(errors.message)}
+                    aria-describedby={errors.message ? "message-error" : undefined}
+                    required
+                  />
+                  {errors.message && (
+                    <p id="message-error" className="mt-1 text-sm text-red-600">
+                      {errors.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Turnstile */}
+                <div>
+                  <div
+                    className="cf-turnstile"
+                    data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                    data-callback="onTurnstileSuccess"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Protected by Cloudflare Turnstile.
+                    {!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+                      <>
+                        {" "}
+                        Missing site key. Set <code>NEXT_PUBLIC_TURNSTILE_SITE_KEY</code> in env.
+                      </>
+                    )}
+                  </p>
+                </div>
+
+                <div className="pt-1">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="inline-flex w-full items-center justify-center rounded-md bg-orange-600 px-4 py-2.5 text-white transition hover:bg-orange-700 active:bg-orange-800 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
+                  >
+                    {submitting ? (
+                      <>
+                        <svg
+                          className="mr-2 h-4 w-4 animate-spin"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          />
+                        </svg>
+                        Sending...
+                      </>
+                    ) : (
+                      "Send message"
+                    )}
+                  </button>
+                </div>
+
+                {submitted && (
+                  <p className="text-center text-sm text-green-700">
+                    We’ve received your message. We’ll contact you soon.
+                  </p>
                 )}
-              </p>
+              </form>
             </div>
-            <div>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="inline-flex w-full items-center justify-center rounded-md bg-black px-4 py-2 text-white transition hover:bg-gray-800 disabled:opacity-60"
-              >
-                {submitting ? (
-                  <>
-                    <svg
-                      className="mr-2 h-4 w-4 animate-spin"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
+
+            {/* Right: Info */}
+            <aside className="md:col-span-2 space-y-4">
+              <div className="rounded-2xl border bg-gradient-to-b from-orange-50/40 via-white to-white p-6 shadow-sm">
+                <h3 className="text-base font-semibold text-gray-900">What happens next</h3>
+                <ul className="mt-3 space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span aria-hidden="true" className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-600" />
+                    <span>We reply within 24–48 hours (business days).</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span aria-hidden="true" className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-600" />
+                    <span>We’ll ask a few questions and propose a simple plan.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span aria-hidden="true" className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-600" />
+                    <span>No long decks — we prefer clear execution and measurable results.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="rounded-2xl border bg-white p-6 shadow-sm">
+                <h3 className="text-base font-semibold text-gray-900">Best for</h3>
+                <p className="mt-2 text-sm text-gray-600">
+                  Brands looking to improve performance marketing, e-commerce conversion, and
+                  operational reporting.
+                </p>
+                <div className="mt-4 grid gap-2 text-sm text-gray-700">
+                  <div className="flex items-start gap-2">
+                    <span aria-hidden="true" className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-600" />
+                    <span>Scaling paid media across markets</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span aria-hidden="true" className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-600" />
+                    <span>Fixing tracking and reporting</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span aria-hidden="true" className="mt-1 h-1.5 w-1.5 rounded-full bg-orange-600" />
+                    <span>Improving conversion and retention</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border bg-white p-6 shadow-sm">
+                <h3 className="text-base font-semibold text-gray-900">Direct contact</h3>
+                <div className="mt-3 space-y-2 text-sm">
+                  <p className="text-gray-700">
+                    Email:{" "}
+                    <a
+                      href="mailto:info@yoload.asia"
+                      className="font-medium underline decoration-gray-300 underline-offset-4 hover:decoration-gray-500"
                     >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      />
-                    </svg>
-                    Sending...
-                  </>
-                ) : (
-                  "Send message"
-                )}
-              </button>
-            </div>
-            {submitted && (
-              <p className="text-center text-sm text-green-700">
-                We have received your message. We will contact you soon.
-              </p>
-            )}
-            <p className="text-center text-xs text-gray-500">
-              This form is a placeholder. Hook it up to your preferred backend.
-            </p>
-          </form>
+                      info@yoload.asia
+                    </a>
+                  </p>
+                  <p className="text-gray-700">Tel: +65 8689 5869</p>
+                  <p className="text-xs text-gray-500">
+                    By submitting this form, you agree to be contacted about your inquiry.
+                  </p>
+                </div>
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
     </section>
