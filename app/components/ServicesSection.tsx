@@ -1,73 +1,70 @@
+// app/components/ServicesSection.tsx
+import React from "react";
+
+type Service = {
+  title: string;
+  description: string;
+  bullets: string[];
+};
+
 export default function ServicesSection() {
-  const services = [
+  const services: Service[] = [
     {
-      title: "Advertising Operations",
-      desc:
-        "Optimize campaigns with creative testing, KPI design, and rigorous operations to maximize results.",
+      title: "Performance Advertising",
+      description:
+        "Paid media execution that is measurable, repeatable, and aligned with your revenue goals.",
+      bullets: ["Meta / Google / TikTok", "Creative & iteration loops", "Weekly reporting & insights"],
     },
     {
-      title: "E-commerce Support",
-      desc:
-        "From store setup to operations improvements and fulfillment integrations, end-to-end.",
+      title: "E-commerce Growth",
+      description:
+        "Conversion-focused improvements across the customer journey — from landing pages to CRM.",
+      bullets: ["CRO & funnel analysis", "LP/Shop optimization", "Email/CRM coordination"],
     },
     {
-      title: "Consulting",
-      desc:
-        "Issue discovery, strategy, and hands-on execution with change management.",
+      title: "Operations & Analytics",
+      description:
+        "A reliable ops partner to keep execution clean: tracking, dashboards, QA, and process.",
+      bullets: ["GA4 / GTM / Pixels", "Dashboards & KPI definitions", "Ops QA & documentation"],
     },
   ];
 
   return (
-    <section id="services" className="border-t bg-gray-50">
-      <div className="container mx-auto px-4 py-12 sm:px-6 sm:py-16 md:py-20">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "ItemList",
-              itemListElement: services.map((s, i) => ({
-                "@type": "ListItem",
-                position: i + 1,
-                item: {
-                  "@type": "Service",
-                  name: s.title,
-                  description: s.desc,
-                  provider: {
-                    "@type": "Organization",
-                    name: "YOLO ADVENTURES PTE. LTD.",
-                    url: "https://yoload.asia/",
-                  },
-                },
-              })),
-            }),
-          }}
-        />
+    <section className="py-16 sm:py-20">
+      <div className="container mx-auto px-4 sm:px-6">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
+          <p className="text-xs font-semibold tracking-[0.2em] text-orange-600 uppercase">
             Services
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
+            Ads × E-commerce × Operations — end to end
           </h2>
-          <p className="mt-3 text-base leading-relaxed text-gray-600 sm:text-lg">
-            Tools that make logistics faster, clearer, and easier to run.
+          <p className="mt-4 text-base text-gray-600 sm:text-lg">
+            We support global brands with performance marketing, e-commerce execution, and the
+            operational systems that keep growth predictable.
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:mt-12 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (
             <div
               key={s.title}
-              className="rounded-lg border bg-white p-6 shadow-sm transition hover:shadow-md focus-within:shadow-md"
+              className="rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-md"
             >
               <h3 className="text-lg font-semibold text-gray-900">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{s.desc}</p>
-              <div className="mt-4">
-                <a
-                  href="#contact"
-                  className="inline-flex items-center text-sm font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 hover:decoration-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                >
-                  Learn more
-                </a>
-              </div>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">{s.description}</p>
+
+              <ul className="mt-4 space-y-2 text-sm text-gray-700">
+                {s.bullets.map((b) => (
+                  <li key={b} className="flex items-start gap-2">
+                    <span
+                      aria-hidden="true"
+                      className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-orange-600"
+                    />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
