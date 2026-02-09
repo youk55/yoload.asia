@@ -4,9 +4,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     
-    console.log("BODY:", body)
-	console.log("TOKEN:", body.turnstileToken)
-
 
     const name = (body?.name ?? "").toString().trim();
     const email = (body?.email ?? "").toString().trim();
